@@ -1,4 +1,6 @@
+# remove --live-restore from /etc/sysconfig/docker
 # https://github.com/pierreprinetti/certbot
+# su -c "setenforce 0" && chcon -Rt svirt_sandbox_file_t $(pwd)
 # docker volume create --name nginx-certs
 # docker run   -v nginx-certs:/etc/letsencrypt   -e domains="speedy1.under-development.info"   -e email="phil@phil-taylor.com"   -p 80:80   -p 443:443   --rm pierreprinetti/certbot:latest
 # docker run -it --rm -v nginx-certs:/vol alpine ls -l /vol
@@ -12,7 +14,8 @@ services:
     ports:
      -  9000:9000
     volumes:
-       - ./sitefiles:/var/www/current
+       - ./sitefiles:/var/www/current:z
+    restart: always
   redis:
     container_name: 'fast-redis'
     build:
@@ -21,15 +24,16 @@ services:
     ports:
      -  6379:6379
     volumes:
-       - ./build/docker/.data/redis/:/data
+       - ./build/docker/.data/redis/:/data:Z
+    restart: always
   db:
     container_name: 'fast-db'
     build:
       context: ./build/docker/config/mysql/
       dockerfile: Dockerfile
     volumes:
-       - ./build/docker/.data/mysql:/var/lib/mysql
-    #restart: always
+       - ./build/docker/.data/mysql:/var/lib/mysql:Z
+    restart: always
     ports:
      -  3306:3306
     environment:
@@ -46,9 +50,11 @@ services:
       -  80:80
       -  443:443
     volumes:
-      - ./build/docker/config/nginx/site.conf:/etc/nginx/conf.d/site.conf
-      - nginx-certs:/root/ssl/speedy1.under-development.info/live/
-      - ./sitefiles:/var/www/current
+      - ./build/docker/config/nginx/site.conf:/etc/nginx/conf.d/site.conf:z
+      - ./build/docker/config/nginx/gzip.conf:/etc/nginx/conf.d/gzip.conf:z
+      - nginx-certs:/root/ssl/:Z
+      - ./sitefiles:/var/www/current:Z
+    restart: always
     command: [nginx-debug, '-g', 'daemon off;']       
 volumes:
   nginx-certs:
