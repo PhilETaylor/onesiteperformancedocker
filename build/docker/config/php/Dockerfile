@@ -34,6 +34,8 @@ RUN wget https://github.com/phpredis/phpredis/archive/4.0.2.tar.gz \
     && mv ./phpredis-4.0.2 /usr/src/php/ext/redis && rm -Rf phpredis-4.0.2 \
     && update-ca-certificates \
     && echo 'memory_limit=1024M' > /etc/php/7.2/conf.d/memory_limit.ini \
+    && echo 'upload_max_filesize=1024M' > /etc/php/7.2/conf.d/upload_max_filesize.ini \
+    && echo 'post_max_size=1024M' > /etc/php/7.2/conf.d/post_max_size.ini \
     && echo '[global]' > /etc/php/7.2/php-fpm.d/zz-docker.conf \
     && echo 'daemonize = no' >> /etc/php/7.2/php-fpm.d/zz-docker.conf \
     && echo '[www]' >> /etc/php/7.2/php-fpm.d/zz-docker.conf \

@@ -53,7 +53,7 @@ services:
       - ./build/docker/config/nginx/site.conf:/etc/nginx/conf.d/site.conf:z
       - ./build/docker/config/nginx/gzip.conf:/etc/nginx/conf.d/gzip.conf:z
       - nginx-certs:/root/ssl/:Z
-      - ./sitefiles:/var/www/current:Z
+      - ./sitefiles:/var/www/current:z
     restart: always
     command: [nginx-debug, '-g', 'daemon off;']       
 volumes:
